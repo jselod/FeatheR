@@ -1,0 +1,43 @@
+---
+title: "Module 8 Project Report"
+author: "Jaan Selod"
+date: "2023-11-17"
+output: html_document
+bibliography: BIOL3140.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rgbif)
+library(tidyverse)
+library(MuMIn)
+library(rnoaa)
+library(data.table)
+library(ggmap)
+library(usmap)
+library(magick)
+library(cowplot)
+library(lme4)
+library(car)
+library(data.table)
+```
+
+```{r querying GBIF's API, echo = FALSE}
+species <- c("Piranga olivacea", "Leiothlypis ruficapilla", "Dolichonyx oryzivorus", "Cistothorus palustris","Chordeiles minor")
+year <- paste0("1990",",","2022")
+month <- paste0("3",",","6")
+
+data.l <- list() #making empty list to store data
+
+for (s in species) {
+  obs.num <- occ_data(scientificName = s, year = year, month = month, limit = 0, country = "US", basisOfRecord = "HUMAN_OBSERVATION", stateProvince = "Massachusetts")$meta$count
+  data.l[[paste0(s)]] <- occ_data(scientificName = s, year = year, month = month,
+                               limit = obs.num, country = "US",
+                               basisOfRecord = "HUMAN_OBSERVATION",
+                               stateProvince = "Massachusetts")[[2]]
+}
+
+dat <- rbindlist(data.l,fill=T)
+
+head(dat)
+```

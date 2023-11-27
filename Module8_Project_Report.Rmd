@@ -69,4 +69,46 @@ sta.data <- bind_rows(
 
 print(sta.data)
 
+plot_usmap(include = c(.northeast_region, .south_region, .east_north_central)) + geom_point(data = sta.data, aes(x = longitude.1, y = latitude.1, col = name), size = 5) + geom_label(data = sta.data, aes(x = longitude.1, y=latitude.1, col = name, label = name), size = 5, nudge_x = 1e6*0.25) + theme(legend.position = "none")
+
+#Now we want weather data from these stations during the spring of the years we have good data for (pretty much 2000 on)
+weather.data <- meteo_pull_monitors(sta.data$id,date_min = "2000-01-01")
+#tmin = minimum temperature in tenths of ºC
+#tmax = maximum temperature in tenths of ºC
+#awnd = average wind velocity in m^(-s)
+#wdf2 = direction of fastest 2-minute wind
+```
+
+```{r preparing eBird data}
+mc<- dat %>%
+  filter(species == "Piranga olivacea") %>%
+  group_by(year) %>%
+  mutate(date = as.Date(paste0(year,"-",month,"-",day)),
+         j.day = julian(date,origin=as.Date(paste0(unique(year),"-01-01"))))%>%
+  group_by(species, year, j.day, date) %>%
+  summarise(day.tot = sum(individualCount, na.rm=T)) %>%
+  group_by(species, year) %>%
+  mutate(prop = cumsum(day.tot/sum(day.tot,na.rm = T))) %>%
+  filter(year>1999)
+
+mc %>%
+  ggplot(aes(j.day,prop)) + geom_point() + facet_wrap(year~.)
+
+#arrival of these migrants follows a logistic process when we consider the proportion of the population that has arrived!
+
+#lets use logistic modeling:
+mc.pred <- mc %>%
+  group_by(year) %>%
+ summarize(pred = predict(nls(prop ~ SSlogis(j.day, Asym, xmid, scal)), newdata = data.frame(j.day = min(j.day):max(j.day))), #predict the logistic curve for each species
+   j.day=min(j.day):max(j.day),) %>%
+  left_join(mc %>% dplyr::select(j.day,date)) #add date back to tibble
+
+mc%>%
+  ggplot(aes(j.day,prop)) + geom_point(aes=0.3) + geom_line(data = mc.pred, aes(x = j.day, y = pred), col="blue", size=2) + facet_wrap(year~.)
+```
+
+
+
+```{r linear mixed effect models}
+
 ```

@@ -64,7 +64,7 @@ sta.data <- bind_rows(
   lapply(sts,function(x) ncdc_stations(stationid = x)$data)) %>%
   mutate(usmap_transform(.,input_names = c("longitude","latitude"), output_names = c("longitude.1", "latitude.1"))) %>% #join transformation of lat/long for projection with usmap
   mutate(name = str_sub(name, -5,-4)) %>% #simplify the name column, grab just the state
-  mutate(migr.day=c(10,5,0)) %>% #so we can look at wind speed 0, 5 or 10 days before arrive in boston
+  mutate(migr.day = c(10,5,0)) %>% #so we can look at wind speed 0, 5 or 10 days before arrive in boston
   separate(id,into = c("station.type","id")) #need to cut station type out from station id number
 
 print(sta.data)

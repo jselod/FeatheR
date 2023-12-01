@@ -1,6 +1,6 @@
 ---
 title: "Module 8 Project Report"
-author: "Jaan Selod"
+author: "FeatheR"
 date: "2023-11-17"
 output: html_document
 bibliography: BIOL3140.bib
@@ -22,6 +22,14 @@ library(lme4)
 library(car)
 library(data.table)
 ```
+
+##Introduction:
+The goal of this project is to use eBird and meteorological data to study the effect of local weather conditions on the arrival time of trans-Gulf migrant (TGM) species in Massachusetts. Specifically, we are examining if arrival time of five different species varies according to temperature and wind variables along migration route for these TGMs migrating to Massachusetts. Once considering that arrival time may vary with meteorological conditions, we will consider what role climate change will potentially play in the population status of TGMs arriving in MA during the spring. 
+
+##Methods:
+We began by downloading eBird’s species occurrence data from the Global Biodiversity Information Facility (GBIF) and selecting 5 TGMs to analysze. We then compiled weather using rnoa which contains functions that interact with NOAA’s National Climatic Data Center’s API.
+
+##Results:
 
 ```{r querying GBIFs API, echo=FALSE, cache = TRUE}
 species <- c("Piranga olivacea", "Leiothlypis ruficapilla", "Dolichonyx oryzivorus", "Megaceryle alcyon","Chordeiles minor")
@@ -144,5 +152,13 @@ po.arr.weath2
 ```
 
 ```{r linear mixed effect models}
-
+#Linear mixed-effect modeling of arrival day as it varies with these weather variables for both weather data sets (single-day and two-week average)
+#Model-testing operations of both data sets using dredge().
+#Anova testing of the best-fit models from both data sets.
 ```
+
+##Discussion:
+How does your analysis contribute to, challenge, or refine previous hypothesis concerning the role that climatic variables play in long-distance migration in passerine birds?
+
+##Author Contributions: The group met outside of class to split the work up. Jaan inserted the necessary code chunks. Elisabeth created the bibliography and crafted the Introduction and Author Contributions. 
+##References:

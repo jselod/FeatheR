@@ -84,7 +84,7 @@ po <- dat %>%
   filter(species == "Piranga olivacea") %>%
   group_by(year) %>%
   mutate(date = as.Date(paste0(year,"-",month,"-",day)),
-         j.day = julian(date,origin=as.Date(paste0(unique(year),"-01-01"))))%>%
+         j.day = julian(date, origin = as.Date(paste0(unique(year),"-01-01")))) %>%
   group_by(species, year, j.day, date) %>%
   summarise(day.tot = sum(individualCount, na.rm=T)) %>%
   group_by(species, year) %>%
@@ -107,29 +107,28 @@ po %>%
   ggplot(aes(j.day,prop)) + geom_point(aes=0.3) + geom_line(data = po.pred, aes(x = j.day, y = pred), col="blue", size=2) + facet_wrap(year~.)
 
 po.arrive.date <-po.pred%>%
-  group_by(year)%>%
+  group_by(year) %>%
   filter(j.day==j.day[which.min(abs(pred-0.25))])
 
-po.arrive.date%>%
-  ggplot(aes(year,j.day))+geom_point()
+po.arrive.date %>%
+  ggplot(aes(year,j.day))+ geom_point()
 ```
 
 ```{r preparing weather data}
 weather.data <- weather.data %>%
-  mutate(year=as.integer(str_sub(date,1,4)), 
-         date=as.Date(date)) %>%
+  mutate(year = as.integer(str_sub(date, 1, 4)), dat = as.Date(date)) %>%
   group_by(year) %>%
- mutate(j.day=julian(date,origin=as.Date(paste0(unique(year),"-01-01"))), 
-  date2=date,
-  wdir.rad=(180-abs(wdf2-180))*pi/180,
-  wvec=cos(wdir.rad)*-1*awnd) %>% 
-  dplyr::select(id,year,date2,j.day,tmin,tmax,wvec) %>% 
-  left_join(sta.data %>% select(id,name,migr.day)) %>% 
-  mutate(j.day=j.day+migr.day)
+ mutate(j.day = julian(date, origin = as.Date(paste0(unique(year), "-01-01"))), 
+  date2 = date,
+  wdir.rad = (180-abs(wdf2-180))*pi/180,
+  wvec = cos(wdir.rad)*-1*awnd) %>% 
+  dplyr::select(id, year, date2, j.day, tmin, tmax, wvec) %>% 
+  left_join(sta.data %>% select(id, name, migr.day)) %>% 
+  mutate(j.day = j.day + migr.day)
 
 po.arr.weath <- po.arrive.date%>%
   left_join(weather.data)%>%
-  left_join(mc%>%dplyr::select(year,date,j.day))
+  left_join(po %>% dplyr::select(year,date,j.day))
 
 weather.wk <-weather.data %>% 
   group_by(year, name) %>% 
@@ -140,6 +139,8 @@ weather.wk <-weather.data %>%
 
 po.arr.weath2 <- po.arrive.date %>%
   left_join(weather.wk)
+
+po.arr.weath2
 ```
 
 ```{r linear mixed effect models}

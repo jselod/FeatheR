@@ -80,7 +80,7 @@ weather.data <- meteo_pull_monitors(sta.data$id,date_min = "2000-01-01")
 ```
 
 ```{r preparing eBird data}
-mc<- dat %>%
+po <- dat %>%
   filter(species == "Piranga olivacea") %>%
   group_by(year) %>%
   mutate(date = as.Date(paste0(year,"-",month,"-",day)),
@@ -91,23 +91,56 @@ mc<- dat %>%
   mutate(prop = cumsum(day.tot/sum(day.tot,na.rm = T))) %>%
   filter(year>1999)
 
-mc %>%
+po %>%
   ggplot(aes(j.day,prop)) + geom_point() + facet_wrap(year~.)
 
 #arrival of these migrants follows a logistic process when we consider the proportion of the population that has arrived!
 
 #lets use logistic modeling:
-mc.pred <- mc %>%
+po.pred <- po %>%
   group_by(year) %>%
  summarize(pred = predict(nls(prop ~ SSlogis(j.day, Asym, xmid, scal)), newdata = data.frame(j.day = min(j.day):max(j.day))), #predict the logistic curve for each species
    j.day=min(j.day):max(j.day),) %>%
-  left_join(mc %>% dplyr::select(j.day,date)) #add date back to tibble
+  left_join(po %>% dplyr::select(j.day,date)) #add date back to tibble
 
-mc%>%
-  ggplot(aes(j.day,prop)) + geom_point(aes=0.3) + geom_line(data = mc.pred, aes(x = j.day, y = pred), col="blue", size=2) + facet_wrap(year~.)
+po %>%
+  ggplot(aes(j.day,prop)) + geom_point(aes=0.3) + geom_line(data = po.pred, aes(x = j.day, y = pred), col="blue", size=2) + facet_wrap(year~.)
+
+po.arrive.date <-po.pred%>%
+  group_by(year)%>%
+  filter(j.day==j.day[which.min(abs(pred-0.25))])
+
+po.arrive.date%>%
+  ggplot(aes(year,j.day))+geom_point()
 ```
 
+```{r preparing weather data}
+weather.data <- weather.data %>%
+  mutate(year=as.integer(str_sub(date,1,4)), 
+         date=as.Date(date)) %>%
+  group_by(year) %>%
+ mutate(j.day=julian(date,origin=as.Date(paste0(unique(year),"-01-01"))), 
+  date2=date,
+  wdir.rad=(180-abs(wdf2-180))*pi/180,
+  wvec=cos(wdir.rad)*-1*awnd) %>% 
+  dplyr::select(id,year,date2,j.day,tmin,tmax,wvec) %>% 
+  left_join(sta.data %>% select(id,name,migr.day)) %>% 
+  mutate(j.day=j.day+migr.day)
 
+po.arr.weath <- po.arrive.date%>%
+  left_join(weather.data)%>%
+  left_join(mc%>%dplyr::select(year,date,j.day))
+
+weather.wk <-weather.data %>% 
+  group_by(year, name) %>% 
+  mutate(wk.tmin = frollmean(tmin, n=14, align="right"),
+         wk.tmax = frollmean(tmax, n=14, align="right"),
+         wk.wvec = frollmean(wvec, n=14, align="right"))%>%
+  dplyr::select(j.day,date2,name,wk.tmin,wk.tmax,wk.wvec)
+
+po.arr.weath2 <- po.arrive.date %>%
+  left_join(weather.wk)
+```
 
 ```{r linear mixed effect models}
 

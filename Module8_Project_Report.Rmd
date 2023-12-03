@@ -24,10 +24,10 @@ library(data.table)
 ```
 
 ##Introduction:
-The goal of this project is to use eBird and meteorological data to study the effect of local weather conditions on the arrival time of trans-Gulf migrant (TGM) species in Massachusetts. Specifically, we are examining if arrival time of five different species varies according to temperature and wind variables along migration route for these TGMs migrating to Massachusetts. Once considering that arrival time may vary with meteorological conditions, we will consider what role climate change will potentially play in the population status of TGMs arriving in MA during the spring. 
+The aim of this project is to use eBird and meteorological data to study the effect of local weather conditions on the arrival time of trans-Gulf migrant (TGM) species in Massachusetts. Specifically, we are examining if arrival time of five different species varies according to temperature and wind variables along migration route for these TGMs migrating to Massachusetts. Once considering that arrival time may vary with meteorological conditions, we will also consider what role climate change will potentially play in the population status of TGMs arriving in MA during the spring. Many researchers have studied the relationship between weather and migration patterns, including [@richardson1978timing], who concluded that maximum numbers migrate with fair weather, with tailwinds and with temperature, pressure and humidity conditions that accompany tailwinds. 
 
 ##Methods:
-We began by downloading eBird’s species occurrence data from the Global Biodiversity Information Facility (GBIF) and selecting 5 TGMs to analysze. We then compiled weather using rnoa which contains functions that interact with NOAA’s National Climatic Data Center’s API.
+We began by downloading eBird’s species occurrence data from the Global Biodiversity Information Facility (GBIF) and selecting 5 TGMs to analyse. We then compiled weather using rnoa which contains functions that interact with NOAA’s National Climatic Data Center’s API. Fot analysis, we computed arrival time for each species by finding the day that corresponds to when 25% of all the individuals have arrived in a given year and modeled this process as a logistics curve. We then found the Julian day each year that is closest to 0.25 of the population arriving and plotted how this arrival day varied with year. When preparing our weather data, we scaled the wind direction to 180 degrees and essentially selected the weather columns we want to work with. With two joined tibbles each containing eBird and weather data, we were finally able to use linear mixed-effect modeling to evaluate the effect of weather parameters on arrival time. The Anova() functiong was key in assessing the significance of the fixed effects we’ve used and the Dredge() function allowed us to determine our best-fit nested model.
 
 ##Results:
 
@@ -152,13 +152,34 @@ po.arr.weath2
 ```
 
 ```{r linear mixed effect models}
+
 #Linear mixed-effect modeling of arrival day as it varies with these weather variables for both weather data sets (single-day and two-week average)
 #Model-testing operations of both data sets using dredge().
 #Anova testing of the best-fit models from both data sets.
+
+#weather at 0, 5, and 10 days away from arrival
+mc.lmer <- lmer(j.day~tmin*tmax*wvec+(1|name),po.arr.weath,na.action = "na.fail")
+Anova(mc.lmer)
+
+#0Mean two week weather preceding arrival
+mc.lmer2 <- lmer(j.day~wk.tmin*wk.tmax*wk.wvec+(1|name),po.arr.weath2,na.action = "na.fail")
+Anova(mc.lmer2)
+
+po.arr.aic <- dredge(mc.lmer2,fixed = c("wk.tmin","wk.tmax","wk.wvec"),)
+
+mc.kb <- kable(po.arr.aic[1:4,],caption = "Fit values for nested models of the most complicated lme model")
+
+kable_styling(mc.kb)
+
+best.lmer <-  lmer(j.day~wk.tmin+wk.tmax+wk.wvec+(1|name),po.arr.weath2,na.action = "na.fail")
+
+Anova(best.lmer)
 ```
 
 ##Discussion:
 How does your analysis contribute to, challenge, or refine previous hypothesis concerning the role that climatic variables play in long-distance migration in passerine birds?
 
-##Author Contributions: The group met outside of class to split the work up. Jaan inserted the necessary code chunks. Elisabeth created the bibliography and crafted the Introduction and Author Contributions. 
+##Author Contributions: 
+The group communicated outside of class to split the work up. Jaan inserted the necessary code chunks. Elisabeth created the bibliography and crafted the Introduction, Methods, and Author Contributions. Yingshan finished the linear mixed effect coding and wrote subsequent interpretation for the discussion.
+
 ##References:

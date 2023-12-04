@@ -199,18 +199,18 @@ po.arr.weath2
 #Anova testing of the best-fit models from both data sets.
 
 #weather at 0, 5, and 10 days away from arrival
-mc.lmer <- lmer(j.day~tmin*tmax*wvec+(1|name),po.arr.weath,na.action = "na.fail")
-Anova(mc.lmer)
+po.lmer <- lmer(j.day~tmin*tmax*wvec+(1|name),po.arr.weath,na.action = "na.fail")
+Anova(po.lmer)
 
 #0Mean two week weather preceding arrival
-mc.lmer2 <- lmer(j.day~wk.tmin*wk.tmax*wk.wvec+(1|name),po.arr.weath2,na.action = "na.fail")
-Anova(mc.lmer2)
+po.lmer2 <- lmer(j.day~wk.tmin*wk.tmax*wk.wvec+(1|name),po.arr.weath2,na.action = "na.fail")
+Anova(po.lmer2)
 
-po.arr.aic <- dredge(mc.lmer2,fixed = c("wk.tmin","wk.tmax","wk.wvec"),)
+po.arr.aic <- dredge(po.lmer2,fixed = c("wk.tmin","wk.tmax","wk.wvec"),)
 
-mc.kb <- kable(po.arr.aic[1:4,],caption = "Fit values for nested models of the most complicated lme model")
+po.kb <- kable(po.arr.aic[1:4,],caption = "Fit values for nested models of the most complicated lme model")
 
-kable_styling(mc.kb)
+kable_styling(po.kb)
 
 best.lmer <-  lmer(j.day~wk.tmin+wk.tmax+wk.wvec+(1|name),po.arr.weath2,na.action = "na.fail")
 

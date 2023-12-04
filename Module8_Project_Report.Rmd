@@ -220,6 +220,12 @@ Anova(best.lmer)
 ##Discussion:
 How does your analysis contribute to, challenge, or refine previous hypothesis concerning the role that climatic variables play in long-distance migration in passerine birds?
 
+According to the linear mixed-effects models, the arrival time of TGMs in MA may indeed vary with meteorological conditions along their migration route. The model investigates the effect of all three variables (tmax, tmin, wvec) in relation to arrival time. The p-values for tmax ((0.0634) and tmin (0.6455) in the daily weather model indicate that maximum temperature has a near-significant effect on arrival time (p < 0.1), suggesting a possible trend, while minimum temperature does not have a statistically significant effect. The wind variable (wvec) also does not show a significant effect (p = 0.7007).
+
+This analysis provides evidence that may suggest a role for maximum temperature in influencing migration timing. Thus, climate change will most likely affect the arrival date of migrartory birds. As global warming progresses, the maximum temperature will increase as well, which may eventually become significant to the arrival time.
+
+In [@knudsen2011challenging]'s paper on birds' spring migration in response to climate change, it was found that birds advance their spring migration in response to climate change and climate change affects migration distance and routes. Our data support this claim in which a max temperature may contribute to the arrival time. 
+
 ##Author Contributions: 
 The group communicated outside of class to split the work up. Jaan inserted the necessary code chunks. Elisabeth created the bibliography and crafted the Introduction, Methods, and Author Contributions. Yingshan finished the linear mixed effect coding and wrote subsequent interpretation for the discussion.
 

@@ -217,6 +217,26 @@ best.lmer <-  lmer(j.day~wk.tmin+wk.tmax+wk.wvec+(1|name),po.arr.weath2,na.actio
 Anova(best.lmer)
 ```
 
+```{r, modeling, message=FALSE ,echo=FALSE,warning=FALSE}
+
+bird_model_d <- lmer(j.day~tmin*tmax*wvec+(1|name),sp.arr.weath.d,na.action = "na.fail")
+bird_model_wk <- lmer(j.day~wk.tmin*wk.tmax*wk.wvec+(1|name),sp.arr.weath.wk,na.action = "na.fail")
+
+arr_wk_aic <- dredge(bird_model_wk,fixed = c("wk.tmin","wk.tmax","wk.wvec"),)
+kb_wk <- kable(arr_wk_aic[1:4,],caption = "Fit values for nested models of the most complicated lme model for two-week weather")
+
+kable_styling(kb_wk)
+best_model_wk <- lmer(j.day~wk.tmin+wk.tmax+wk.wvec+(1|name),sp.arr.weath.wk,na.action = "na.fail")
+Anova(best_model_wk)
+
+arr_d_aic <- dredge(bird_model_d,fixed = c("tmin","tmax","wvec"),)
+kb_d <- kable(arr_d_aic[1:4,],caption = "Fit values for nested models of the most complicated lme model for daily weather")
+
+kable_styling(kb_d)
+best_model_d <- lmer(j.day~tmin+tmax+wvec+(1|name),sp.arr.weath.d,na.action = "na.fail")
+Anova(best_model_d)
+```
+
 ##Discussion:
 How does your analysis contribute to, challenge, or refine previous hypothesis concerning the role that climatic variables play in long-distance migration in passerine birds?
 

@@ -99,8 +99,49 @@ po <- dat %>%
   mutate(prop = cumsum(day.tot/sum(day.tot,na.rm = T))) %>%
   filter(year>1999)
 
-po %>%
-  ggplot(aes(j.day,prop)) + geom_point() + facet_wrap(year~.)
+lr <- dat %>%
+  filter(species == "Leiothlypis ruficapilla") %>%
+  group_by(year) %>%
+  mutate(date = as.Date(paste0(year,"-",month,"-",day)),
+         j.day = julian(date, origin = as.Date(paste0(unique(year),"-01-01")))) %>%
+  group_by(species, year, j.day, date) %>%
+  summarise(day.tot = sum(individualCount, na.rm=T)) %>%
+  group_by(species, year) %>%
+  mutate(prop = cumsum(day.tot/sum(day.tot,na.rm = T))) %>%
+  filter(year>1999)
+
+do <- dat %>%
+  filter(species == "Dolichonyx oryzivorus") %>%
+  group_by(year) %>%
+  mutate(date = as.Date(paste0(year,"-",month,"-",day)),
+         j.day = julian(date, origin = as.Date(paste0(unique(year),"-01-01")))) %>%
+  group_by(species, year, j.day, date) %>%
+  summarise(day.tot = sum(individualCount, na.rm=T)) %>%
+  group_by(species, year) %>%
+  mutate(prop = cumsum(day.tot/sum(day.tot,na.rm = T))) %>%
+  filter(year>1999)
+
+ma <- dat %>%
+  filter(species == "Megaceryle alcyon") %>%
+  group_by(year) %>%
+  mutate(date = as.Date(paste0(year,"-",month,"-",day)),
+         j.day = julian(date, origin = as.Date(paste0(unique(year),"-01-01")))) %>%
+  group_by(species, year, j.day, date) %>%
+  summarise(day.tot = sum(individualCount, na.rm=T)) %>%
+  group_by(species, year) %>%
+  mutate(prop = cumsum(day.tot/sum(day.tot,na.rm = T))) %>%
+  filter(year>1999)
+
+cm <- dat %>%
+  filter(species == "Chordeiles minor") %>%
+  group_by(year) %>%
+  mutate(date = as.Date(paste0(year,"-",month,"-",day)),
+         j.day = julian(date, origin = as.Date(paste0(unique(year),"-01-01")))) %>%
+  group_by(species, year, j.day, date) %>%
+  summarise(day.tot = sum(individualCount, na.rm=T)) %>%
+  group_by(species, year) %>%
+  mutate(prop = cumsum(day.tot/sum(day.tot,na.rm = T))) %>%
+  filter(year>1999)
 
 #arrival of these migrants follows a logistic process when we consider the proportion of the population that has arrived!
 
